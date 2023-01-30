@@ -3,7 +3,7 @@ import sys
 import time
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QAction, QPixmap, QTransform
+from PyQt6.QtGui import QAction, QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QLabel, QMessageBox
 
 from image_manager import ImageManager
@@ -40,11 +40,9 @@ class MainWindow(QMainWindow):
         """
         更新图片
         """
-        # print(self.viewer.get_current_image())
+
         image_path = self.viewer.get_current_image()
         image = QPixmap(image_path)
-
-
 
         # 使图片适应label，保持图片比例
         image = image.scaled(self.image_label.width(), self.image_label.height(), Qt.AspectRatioMode.KeepAspectRatio)
@@ -62,6 +60,11 @@ class MainWindow(QMainWindow):
         打开文件夹并返回文件夹路径
         """
         folder_path = QFileDialog.getExistingDirectory(self, "Open folder", "")
+
+        # 如果用户没有选择文件夹，则直接返回
+        if folder_path == "":
+            return
+
         self.viewer = ImageManager(folder_path)
 
         if self.viewer.get_image_count() == 0:
@@ -118,10 +121,12 @@ class MainWindow(QMainWindow):
             self.viewer.move_favorites()
         elif key == Qt.Key.Key_Down:
             self.viewer.move_delete()
+        elif key == Qt.Key.Key_Left:
+            self.viewer.move_previous()
         else:
             return
 
-        if self.viewer.get_next_image() is None:
+        if key != Qt.Key.Key_Left and self.viewer.get_next_image() is None:
             if self.selection_dialog("No more images. Do you want to delete all images in the folder?"):
                 self.viewer.delete_all_images()
 

@@ -21,6 +21,7 @@ class ImageManager:
         """
         :return: 当前图片
         """
+        print(self.index)
         return self.images[self.index]
 
     def get_previous_image(self):
@@ -70,6 +71,27 @@ class ImageManager:
         """
         file_name = os.path.basename(self.images[self.index])
         shutil.copy(self.images[self.index], os.path.join(self.delete_folder_path, file_name))
+
+    def move_previous(self):
+        """
+        移动到上一张图片
+        """
+
+        if self.index == 0:
+            return
+        self.index -= 1
+
+        # 检查这张图片在哪个文件夹中并删除
+        file_name = os.path.basename(self.images[self.index])
+
+        if os.path.exists(os.path.join(self.favorites_folder_path, file_name)):
+            os.remove(os.path.join(self.favorites_folder_path, file_name))
+        elif os.path.exists(os.path.join(self.keep_folder_path, file_name)):
+            os.remove(os.path.join(self.keep_folder_path, file_name))
+        elif os.path.exists(os.path.join(self.delete_folder_path, file_name)):
+            os.remove(os.path.join(self.delete_folder_path, file_name))
+
+
 
     def get_image_count(self):
         """
